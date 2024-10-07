@@ -387,3 +387,464 @@ print("Product matrix:\n", C)
 **Explanation:** Strassen’s algorithm multiplies matrices faster than the standard method by reducing the number of recursive multiplications.
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Divide and Conquer Overview
+- **Divide and Conquer** is a well-known algorithmic design technique that works by:
+  1. **Dividing** the problem into two or more smaller subproblems of the same or related type.
+  2. **Conquering** the subproblems by solving them recursively.
+  3. **Combining** the solutions of the subproblems to get the solution to the original problem.
+
+- **Recurrence Relation**:
+  The recurrence relation for divide and conquer algorithms is usually of the form:
+  \[
+  T(n) = aT\left(\frac{n}{b}\right) + f(n)
+  \]
+  Where:
+  - \(a\) is the number of subproblems,
+  - \(n/b\) is the size of each subproblem,
+  - \(f(n)\) is the cost of dividing the problem and combining the results.
+
+- **Master Theorem**:
+  The Master Theorem provides a way to analyze the time complexity of divide and conquer algorithms based on their recurrence relation. For example, when \( a = b^d \), the complexity is \( \Theta(n^d \log n) \).
+
+---
+
+### Key Examples of Divide and Conquer Algorithms
+
+1. **Mergesort**:
+   - **Algorithm**:
+     - Split the input array into two halves.
+     - Recursively sort both halves.
+     - Merge the two sorted halves into a single sorted array.
+   - **Complexity**:
+     - Recurrence: \(T(n) = 2T(n/2) + O(n)\)
+     - Time Complexity: \(O(n \log n)\)
+     - Space Complexity: \(O(n)\)
+     - Example: Sorting an array of size \(n\) by breaking it down into smaller arrays until the size reaches 1, then merging.
+     - [Lecture 6+7c, page 36](23)
+
+2. **Quicksort**:
+   - **Algorithm**:
+     - Select a pivot element.
+     - Partition the array into two subarrays, with elements less than or equal to the pivot on one side and elements greater than the pivot on the other.
+     - Recursively sort both subarrays.
+   - **Complexity**:
+     - Best/Average Case: \(O(n \log n)\)
+     - Worst Case: \(O(n^2)\), occurs when the pivot is the smallest or largest element.
+     - Improvement: Using the "median of three" partitioning reduces the chance of encountering the worst case.
+     - Example: Sorting an array by selecting a pivot and recursively sorting partitions.
+     - [Lecture 6+7c, pages 38-43](23)
+
+3. **Multiplying Large Integers**:
+   - **Problem**: Multiplying very large numbers that cannot fit into a computer word size.
+   - **Strassen’s Algorithm**:
+     - A divide and conquer algorithm that reduces the number of multiplications needed when multiplying matrices.
+     - Breaks down two matrices into smaller matrices and combines the results.
+   - **Complexity**:
+     - Time complexity: \(O(n^{2.81})\), which is faster than the traditional \(O(n^3)\) matrix multiplication.
+     - Example: Using Strassen’s method to multiply large matrices more efficiently.
+     - [Lecture 6+7c, pages 44-45](23)
+
+4. **Closest Pair of Points (Geometric Problem)**:
+   - **Problem**: Given a set of points on a 2D plane, find the pair with the smallest Euclidean distance.
+   - **Algorithm**:
+     - Sort the points based on their x-coordinates.
+     - Divide the set into two halves.
+     - Recursively find the closest pair in each half.
+     - Check for pairs straddling the boundary between the two halves.
+   - **Complexity**:
+     - Time complexity: \(O(n \log n)\), which is faster than the brute-force \(O(n^2)\).
+     - Example: Applying the algorithm to find the closest pair of points on a plane.
+     - [lec8.pdf, pages 23-26](22)
+
+5. **Convex Hull Problem (Quickhull)**:
+   - **Problem**: Find the convex hull (the smallest polygon enclosing all points) from a set of points on a 2D plane.
+   - **Algorithm (Quickhull)**:
+     - Similar to Quicksort, select the extreme points (e.g., leftmost and rightmost).
+     - Recursively find points that form the upper and lower hulls.
+   - **Complexity**:
+     - Worst-case complexity: \(O(n^2)\).
+     - Average-case complexity: \(O(n \log n)\).
+     - Example: Using Quickhull to find the convex hull of a set of points.
+     - [lec8.pdf, pages 30-31](22)
+
+6. **Matrix Multiplication**:
+   - **Strassen’s Method**: An efficient divide and conquer algorithm for matrix multiplication, reducing the number of multiplications.
+   - **Algorithm**:
+     - Divide matrices into smaller submatrices.
+     - Apply recursive multiplication and combining steps.
+   - **Complexity**:
+     - Time complexity: \(O(n^{2.81})\).
+     - [Lecture 6+7c, page 45](23)
+
+---
+
+### Divide and Conquer Efficiency
+- Divide and conquer algorithms are often highly efficient for solving large problems by breaking them down into smaller, manageable subproblems.
+- They are especially useful when:
+  - **Direct problem-solving** is inefficient (e.g., sorting, searching, geometric problems).
+  - **Recursion** can be applied to solve subproblems of the same nature.
+- However, they may require **extra space** (e.g., Mergesort) and can have a **high recursion overhead** if not optimized for tail recursion.
+
+---
+
+---
+
+### 1. **Mergesort**
+
+```python
+def merge_sort(arr):
+    if len(arr) > 1:
+        # Divide
+        mid = len(arr) // 2
+        left_half = arr[:mid]
+        right_half = arr[mid:]
+
+        # Conquer (Recursively sort both halves)
+        merge_sort(left_half)
+        merge_sort(right_half)
+
+        # Combine
+        i = j = k = 0
+
+        # Copy data to temp arrays left_half[] and right_half[]
+        while i < len(left_half) and j < len(right_half):
+            if left_half[i] < right_half[j]:
+                arr[k] = left_half[i]
+                i += 1
+            else:
+                arr[k] = right_half[j]
+                j += 1
+            k += 1
+
+        # Checking if any element was left
+        while i < len(left_half):
+            arr[k] = left_half[i]
+            i += 1
+            k += 1
+
+        while j < len(right_half):
+            arr[k] = right_half[j]
+            j += 1
+            k += 1
+
+# Example usage:
+arr = [38, 27, 43, 3, 9, 82, 10]
+merge_sort(arr)
+print("Sorted array:", arr)
+```
+
+**Explanation:**
+
+- **Divide**: The array is recursively split into halves until the size becomes 1.
+- **Conquer**: Each half is sorted recursively.
+- **Combine**: The sorted halves are merged to produce sorted arrays.
+
+---
+
+### 2. **Quicksort**
+
+```python
+def quicksort(arr, low, high):
+    if low < high:
+        # Partitioning index
+        pi = partition(arr, low, high)
+
+        # Recursively sort elements before and after partition
+        quicksort(arr, low, pi - 1)
+        quicksort(arr, pi + 1, high)
+
+def partition(arr, low, high):
+    # Pivot (Here, we choose the last element as pivot)
+    pivot = arr[high]
+    i = low - 1  # Index of smaller element
+
+    for j in range(low, high):
+        # If current element is smaller than or equal to pivot
+        if arr[j] <= pivot:
+            i += 1  # Increment index of smaller element
+            arr[i], arr[j] = arr[j], arr[i]  # Swap
+
+    # Swap the pivot element with the element at i+1
+    arr[i + 1], arr[high] = arr[high], arr[i + 1]
+    return i + 1
+
+# Example usage:
+arr = [10, 7, 8, 9, 1, 5]
+quicksort(arr, 0, len(arr) - 1)
+print("Sorted array:", arr)
+```
+
+**Explanation:**
+
+- **Divide**: The array is partitioned into subarrays around a pivot.
+- **Conquer**: Recursively sort the subarrays before and after the pivot.
+- **Combine**: The subarrays are inherently combined as the recursion unwinds.
+
+---
+
+### 3. **Multiplying Large Integers (Karatsuba Algorithm)**
+
+```python
+def karatsuba(x, y):
+    # Base case for recursion
+    if x < 10 or y < 10:
+        return x * y
+    else:
+        # Calculates the size of the numbers
+        n = max(len(str(x)), len(str(y)))
+        m = n // 2
+
+        # Split the digit sequences about the middle
+        high_x, low_x = divmod(x, 10**m)
+        high_y, low_y = divmod(y, 10**m)
+
+        # 3 calls made to numbers approximately half the size
+        z0 = karatsuba(low_x, low_y)
+        z1 = karatsuba((low_x + high_x), (low_y + high_y))
+        z2 = karatsuba(high_x, high_y)
+
+        return (z2 * 10**(2 * m)) + ((z1 - z2 - z0) * 10**m) + z0
+
+# Example usage:
+x = 12345678
+y = 87654321
+product = karatsuba(x, y)
+print(f"Product of {x} and {y} is {product}")
+```
+
+**Explanation:**
+
+- **Divide**: The numbers are split into high and low parts.
+- **Conquer**: Recursively compute three products of smaller numbers.
+- **Combine**: Use the Karatsuba formula to combine the products.
+
+---
+
+### 4. **Closest Pair of Points**
+
+```python
+import math
+
+def closest_pair_of_points(points):
+    def distance(p1, p2):
+        return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+    def closest_pair_recursive(px, py):
+        n = len(px)
+        if n <= 3:
+            # Brute-force approach
+            min_dist = float('inf')
+            pair = None
+            for i in range(n):
+                for j in range(i + 1, n):
+                    d = distance(px[i], px[j])
+                    if d < min_dist:
+                        min_dist = d
+                        pair = (px[i], px[j])
+            return min_dist, pair
+
+        # Divide
+        mid = n // 2
+        Qx = px[:mid]
+        Rx = px[mid:]
+        midpoint = px[mid][0]
+        Qy = list()
+        Ry = list()
+        for point in py:
+            if point[0] <= midpoint:
+                Qy.append(point)
+            else:
+                Ry.append(point)
+
+        # Conquer
+        (dl, pair_left) = closest_pair_recursive(Qx, Qy)
+        (dr, pair_right) = closest_pair_recursive(Rx, Ry)
+
+        # Find smaller distance
+        if dl < dr:
+            d = dl
+            min_pair = pair_left
+        else:
+            d = dr
+            min_pair = pair_right
+
+        # Combine
+        strip = [p for p in py if abs(p[0] - midpoint) < d]
+        min_d_strip, pair_strip = closest_strip_pair(strip, d, min_pair, distance)
+        if min_d_strip < d:
+            return min_d_strip, pair_strip
+        else:
+            return d, min_pair
+
+    def closest_strip_pair(strip, d, min_pair, distance):
+        min_d = d
+        n = len(strip)
+        for i in range(n):
+            for j in range(i + 1, min(i + 7, n)):
+                p, q = strip[i], strip[j]
+                dst = distance(p, q)
+                if dst < min_d:
+                    min_d = dst
+                    min_pair = (p, q)
+        return min_d, min_pair
+
+    # Preprocess: sort point lists
+    px = sorted(points, key=lambda x: x[0])
+    py = sorted(points, key=lambda x: x[1])
+
+    # Run recursive function
+    dist, pair = closest_pair_recursive(px, py)
+    return dist, pair
+
+# Example usage:
+points = [(2, 3), (12, 30), (40, 50), (5, 1), (12, 10), (3, 4)]
+distance, pair = closest_pair_of_points(points)
+print(f"The closest pair is {pair} with a distance of {distance}")
+```
+
+**Explanation:**
+
+- **Divide**: Split the set of points into two halves based on x-coordinates.
+- **Conquer**: Recursively find the closest pair in each half.
+- **Combine**: Check for any pair with one point in each half that may be closer.
+
+---
+
+### 5. **Convex Hull Problem (Quickhull Algorithm)**
+
+```python
+def quickhull(points):
+    def find_side(p1, p2, p):
+        return (p[0] - p1[0]) * (p2[1] - p1[1]) - (p2[0] - p1[0]) * (p[1] - p1[1])
+
+    def distance(p1, p2, p):
+        return abs(find_side(p1, p2, p))
+
+    def hull(points, p1, p2, side):
+        index = -1
+        max_dist = 0
+        for i, p in enumerate(points):
+            temp = distance(p1, p2, p)
+            if find_side(p1, p2, p) == side and temp > max_dist:
+                index = i
+                max_dist = temp
+        if index == -1:
+            hull_points.add((p1, p2))
+            return
+        hull(points[:index] + points[index + 1:], points[index], p1, -find_side(points[index], p1, p2))
+        hull(points[:index] + points[index + 1:], points[index], p2, -find_side(points[index], p2, p1))
+
+    if len(points) <= 3:
+        return points
+
+    min_x_point = min(points, key=lambda p: p[0])
+    max_x_point = max(points, key=lambda p: p[0])
+
+    hull_points = set()
+    hull(points, min_x_point, max_x_point, 1)
+    hull(points, min_x_point, max_x_point, -1)
+
+    convex_hull = set()
+    for p1, p2 in hull_points:
+        convex_hull.add(p1)
+        convex_hull.add(p2)
+
+    return list(convex_hull)
+
+# Example usage:
+points = [(0, 3), (2, 2), (1, 1), (2, 1), (3, 0), (0, 0), (3, 3)]
+convex_hull_points = quickhull(points)
+print("Convex Hull points:")
+for point in convex_hull_points:
+    print(point)
+```
+
+**Explanation:**
+
+- **Divide**: Find points that form the extreme ends (leftmost and rightmost).
+- **Conquer**: Recursively find the points that form the convex hull on each side.
+- **Combine**: Combine the upper and lower hull points to get the convex hull.
+
+---
+
+### 6. **Matrix Multiplication (Strassen's Algorithm)**
+
+(Please note that this algorithm was also provided in the previous section, but here it is again for completeness.)
+
+```python
+import numpy as np
+
+def strassen(A, B):
+    assert A.shape == B.shape
+    n = A.shape[0]
+    if n == 1:
+        return A * B
+    else:
+        # Divide matrices into quadrants
+        mid = n // 2
+        A11 = A[:mid, :mid]
+        A12 = A[:mid, mid:]
+        A21 = A[mid:, :mid]
+        A22 = A[mid:, mid:]
+
+        B11 = B[:mid, :mid]
+        B12 = B[:mid, mid:]
+        B21 = B[mid:, :mid]
+        B22 = B[mid:, mid:]
+
+        # Compute the 7 products
+        M1 = strassen(A11 + A22, B11 + B22)
+        M2 = strassen(A21 + A22, B11)
+        M3 = strassen(A11, B12 - B22)
+        M4 = strassen(A22, B21 - B11)
+        M5 = strassen(A11 + A12, B22)
+        M6 = strassen(A21 - A11, B11 + B12)
+        M7 = strassen(A12 - A22, B21 + B22)
+
+        # Compute the result quadrants
+        C11 = M1 + M4 - M5 + M7
+        C12 = M3 + M5
+        C21 = M2 + M4
+        C22 = M1 - M2 + M3 + M6
+
+        # Combine quadrants into a full matrix
+        C = np.zeros((n, n), dtype=A.dtype)
+        C[:mid, :mid] = C11
+        C[:mid, mid:] = C12
+        C[mid:, :mid] = C21
+        C[mid:, mid:] = C22
+        return C
+
+# Example usage:
+A = np.array([[1, 3], [7, 5]])
+B = np.array([[6, 8], [4, 2]])
+C = strassen(A, B)
+print("Product matrix:\n", C)
+```
+
+**Explanation:**
+
+- **Divide**: Split matrices into smaller submatrices (quadrants).
+- **Conquer**: Recursively compute the 7 necessary multiplications.
+- **Combine**: Use the Strassen formula to combine the submatrices into the final product.
+
+---
+
+**Note:** For the Karatsuba algorithm and the Closest Pair of Points, it's essential to ensure that the numbers or the number of points are sufficiently large to see the efficiency gains over traditional methods.
+
