@@ -397,12 +397,12 @@ print("Product matrix:\n", C)
 
 
 
+---
 
 
 
 
-
-
+---
 ### Divide and Conquer Overview
 - **Divide and Conquer** is a well-known algorithmic design technique that works by:
   1. **Dividing** the problem into two or more smaller subproblems of the same or related type.
@@ -867,7 +867,9 @@ print("Product matrix:\n", C)
 
 
 
-
+---
+---
+---
 
 
 
