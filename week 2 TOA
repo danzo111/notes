@@ -1,5 +1,4 @@
 
-
 ### Decrease and Conquer Overview:
 - **Decrease and Conquer** is a problem-solving strategy that involves reducing the problem's size with each step. The solution to a smaller instance is extended to solve the larger problem.
 - The approach can be implemented **recursively** (top-down) or **iteratively** (bottom-up).
