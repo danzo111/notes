@@ -977,9 +977,7 @@ print("Product matrix:\n", C)
    - **Time Complexity**: \( O(\log n) \).
 
 ---
-Certainly! Below are code implementations for the **Transform and Conquer** techniques you've mentioned, along with explanations for each. These examples illustrate how transforming a problem can lead to more efficient solutions.
 
----
 
 ### 1. **Horner’s Rule for Polynomial Evaluation**
 
