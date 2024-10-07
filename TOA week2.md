@@ -977,4 +977,919 @@ print("Product matrix:\n", C)
    - **Time Complexity**: \( O(\log n) \).
 
 ---
+Certainly! Below are code implementations for the **Transform and Conquer** techniques you've mentioned, along with explanations for each. These examples illustrate how transforming a problem can lead to more efficient solutions.
+
+---
+
+### 1. **Horner’s Rule for Polynomial Evaluation**
+
+**Problem:** Evaluate a polynomial \( p(x) = a_n x^n + a_{n-1} x^{n-1} + \dots + a_1 x + a_0 \) efficiently for a given \( x \).
+
+**Solution:** Use Horner’s Rule to reduce the number of multiplications.
+
+```python
+def horner(coeffs, x):
+    """
+    Evaluate a polynomial at x using Horner's Rule.
+
+    :param coeffs: List of coefficients [a_n, a_{n-1}, ..., a_0]
+    :param x: The value at which to evaluate the polynomial
+    :return: The polynomial value at x
+    """
+    result = 0
+    for coefficient in coeffs:
+        result = result * x + coefficient
+    return result
+
+# Example usage:
+coefficients = [2, -6, 2, -1]  # Represents 2x^3 - 6x^2 + 2x - 1
+x_value = 3
+value = horner(coefficients, x_value)
+print(f"The value of the polynomial at x = {x_value} is {value}")
+```
+
+**Explanation:**
+
+- **Transformation:** The polynomial is restructured to minimize operations.
+- **Efficiency:** Reduces the number of multiplications from \( O(n^2) \) to \( O(n) \).
+
+---
+
+### 2. **Binary Exponentiation**
+
+**Problem:** Compute \( a^n \) efficiently for large \( n \).
+
+**Solution:** Use binary exponentiation to reduce the number of multiplications.
+
+```python
+def binary_exponentiation(a, n):
+    """
+    Compute a^n using binary exponentiation.
+
+    :param a: The base
+    :param n: The exponent (non-negative integer)
+    :return: The value of a raised to the power n
+    """
+    result = 1
+    base = a
+    exponent = n
+    while exponent > 0:
+        if exponent % 2 == 1:
+            result *= base
+        base *= base
+        exponent //= 2
+    return result
+
+# Example usage:
+base = 2
+exponent = 10
+power = binary_exponentiation(base, exponent)
+print(f"{base} raised to the power {exponent} is {power}")
+```
+
+**Explanation:**
+
+- **Transformation:** The exponentiation process uses the binary representation of \( n \).
+- **Efficiency:** Reduces time complexity from \( O(n) \) to \( O(\log n) \).
+
+---
+
+### 3. **Least Common Multiple (LCM) Using Greatest Common Divisor (GCD)**
+
+**Problem:** Find the LCM of two integers \( m \) and \( n \).
+
+**Solution:** Use the relationship \( \text{LCM}(m, n) = \frac{m \times n}{\text{GCD}(m, n)} \).
+
+```python
+def gcd(a, b):
+    """
+    Compute the Greatest Common Divisor (GCD) of a and b using Euclid's algorithm.
+
+    :param a: First non-negative integer
+    :param b: Second non-negative integer
+    :return: The GCD of a and b
+    """
+    while b:
+        a, b = b, a % b
+    return a
+
+def lcm(m, n):
+    """
+    Compute the Least Common Multiple (LCM) of m and n.
+
+    :param m: First non-negative integer
+    :param n: Second non-negative integer
+    :return: The LCM of m and n
+    """
+    return (m * n) // gcd(m, n)
+
+# Example usage:
+m = 12
+n = 18
+result = lcm(m, n)
+print(f"The LCM of {m} and {n} is {result}")
+```
+
+**Explanation:**
+
+- **Transformation:** Reduces the LCM problem to computing the GCD.
+- **Efficiency:** GCD computation is efficient using Euclid's algorithm (\( O(\log \min(m, n)) \)).
+
+---
+
+### 4. **Heaps and Heapsort**
+
+**Problem:** Sort an array efficiently using a heap data structure.
+
+**Solution:** Use Heapsort, which involves building a max-heap and extracting the maximum element repeatedly.
+
+```python
+def heapify(arr, n, i):
+    """
+    Ensure the subtree rooted at index i satisfies the max-heap property.
+
+    :param arr: The array representing the heap
+    :param n: Size of the heap
+    :param i: Index of the root of the subtree
+    """
+    largest = i
+    left = 2 * i + 1     # Left child index
+    right = 2 * i + 2    # Right child index
+
+    # If left child exists and is greater than root
+    if left < n and arr[largest] < arr[left]:
+        largest = left
+
+    # If right child exists and is greater than largest so far
+    if right < n and arr[largest] < arr[right]:
+        largest = right
+
+    # If largest is not root
+    if largest != i:
+        arr[i], arr[largest] = arr[largest], arr[i]  # Swap
+        heapify(arr, n, largest)  # Recursively heapify the affected subtree
+
+def heapsort(arr):
+    n = len(arr)
+
+    # Build a max-heap
+    for i in range(n // 2 - 1, -1, -1):
+        heapify(arr, n, i)
+
+    # One by one extract elements
+    for i in range(n - 1, 0, -1):
+        # Swap current root to end
+        arr[i], arr[0] = arr[0], arr[i]
+        heapify(arr, i, 0)
+
+# Example usage:
+arr = [12, 11, 13, 5, 6, 7]
+heapsort(arr)
+print("Sorted array is:", arr)
+```
+
+**Explanation:**
+
+- **Transformation:** Represents the array as a heap to facilitate efficient sorting.
+- **Efficiency:** Heapsort runs in \( O(n \log n) \) time, with good worst-case performance.
+
+---
+
+### 5. **Presorting to Simplify Problems**
+
+**Problem:** Find all pairs of elements in an array that sum to a specific value.
+
+**Solution:** Presort the array to simplify the problem.
+
+```python
+def find_pairs_with_sum(arr, target_sum):
+    """
+    Find all pairs of numbers in arr that sum up to target_sum.
+
+    :param arr: List of integers
+    :param target_sum: The target sum for the pairs
+    :return: List of tuples containing the pairs
+    """
+    arr.sort()  # Presort the array
+    left = 0
+    right = len(arr) - 1
+    pairs = []
+
+    while left < right:
+        current_sum = arr[left] + arr[right]
+        if current_sum == target_sum:
+            pairs.append((arr[left], arr[right]))
+            left += 1
+            right -= 1
+        elif current_sum < target_sum:
+            left += 1
+        else:
+            right -= 1
+
+    return pairs
+
+# Example usage:
+arr = [1, 5, 7, -1, 5]
+target = 6
+result = find_pairs_with_sum(arr, target)
+print(f"Pairs with sum {target}:", result)
+```
+
+**Explanation:**
+
+- **Transformation:** Sorting the array reduces the complexity of finding pairs from \( O(n^2) \) to \( O(n \log n) \).
+- **Efficiency:** After sorting, we can use a two-pointer technique to find pairs in linear time.
+
+---
+
+### 6. **Polynomial Multiplication Using Fast Fourier Transform (FFT)**
+
+Although not mentioned directly, polynomial multiplication is a classic example where a transformation (FFT) is used.
+
+**Problem:** Multiply two polynomials efficiently.
+
+**Solution:** Use the Fast Fourier Transform to perform polynomial multiplication in \( O(n \log n) \) time.
+
+Here's a simplified implementation using the `numpy` library:
+
+```python
+import numpy as np
+
+def polynomial_multiply(p1, p2):
+    """
+    Multiply two polynomials using FFT.
+
+    :param p1: Coefficients of the first polynomial
+    :param p2: Coefficients of the second polynomial
+    :return: Coefficients of the product polynomial
+    """
+    # Determine the size for FFT (next power of 2)
+    n = 1
+    while n < len(p1) + len(p2) - 1:
+        n *= 2
+
+    # Pad the polynomials with zeros
+    p1_extended = np.array(p1 + [0] * (n - len(p1)), dtype=complex)
+    p2_extended = np.array(p2 + [0] * (n - len(p2)), dtype=complex)
+
+    # Compute FFT of both polynomials
+    fft_p1 = np.fft.fft(p1_extended)
+    fft_p2 = np.fft.fft(p2_extended)
+
+    # Point-wise multiplication
+    fft_product = fft_p1 * fft_p2
+
+    # Inverse FFT to get the coefficients of the product
+    product = np.fft.ifft(fft_product)
+
+    # Taking the real part and rounding
+    product = np.real(product)
+    product = [round(coef) for coef in product]
+
+    # Remove trailing zeros
+    while len(product) > 1 and product[-1] == 0:
+        product.pop()
+
+    return product
+
+# Example usage:
+poly1 = [1, 2, 3]  # Represents 1 + 2x + 3x^2
+poly2 = [4, 5, 6]  # Represents 4 + 5x + 6x^2
+product = polynomial_multiply(poly1, poly2)
+print("Product polynomial coefficients:", product)
+```
+
+**Explanation:**
+
+- **Transformation:** Transforms polynomials to the frequency domain using FFT.
+- **Efficiency:** Reduces multiplication from \( O(n^2) \) to \( O(n \log n) \).
+
+---
+
+### 7. **Gaussian Elimination**
+
+**Problem:** Solve a system of linear equations.
+
+**Solution:** Use Gaussian elimination to simplify the system to an upper triangular form and then perform back-substitution.
+
+```python
+import numpy as np
+
+def gaussian_elimination(a, b):
+    """
+    Solve the linear system Ax = b using Gaussian elimination.
+
+    :param a: Coefficient matrix A
+    :param b: Right-hand side vector b
+    :return: Solution vector x
+    """
+    n = len(b)
+    # Forward elimination
+    for k in range(n):
+        # Find the pivot row
+        max_row = max(range(k, n), key=lambda i: abs(a[i][k]))
+        if a[max_row][k] == 0:
+            raise ValueError("Matrix is singular.")
+        # Swap rows
+        if max_row != k:
+            a[k], a[max_row] = a[max_row], a[k]
+            b[k], b[max_row] = b[max_row], b[k]
+        # Eliminate entries below pivot
+        for i in range(k + 1, n):
+            factor = a[i][k] / a[k][k]
+            for j in range(k, n):
+                a[i][j] -= factor * a[k][j]
+            b[i] -= factor * b[k]
+    # Back substitution
+    x = [0] * n
+    for i in reversed(range(n)):
+        sum_ax = sum(a[i][j] * x[j] for j in range(i + 1, n))
+        x[i] = (b[i] - sum_ax) / a[i][i]
+    return x
+
+# Example usage:
+A = [
+    [2, 1, -1],
+    [-3, -1, 2],
+    [-2, 1, 2]
+]
+b = [8, -11, -3]
+solution = gaussian_elimination(A, b)
+print("Solution:", solution)
+```
+
+**Explanation:**
+
+- **Transformation:** Transforms the system into an upper triangular matrix.
+- **Efficiency:** Solves the system in \( O(n^3) \) time.
+
+---
+
+### 8. **Problem Reduction Example: Solving the River Crossing Puzzle**
+
+**Problem:** Determine the sequence of moves to get all characters across a river without violating any constraints.
+
+**Solution:** Model the puzzle as a state-space graph and perform BFS to find the shortest path.
+
+```python
+from collections import deque
+
+def river_crossing_puzzle():
+    """
+    Solve the classic river crossing puzzle using BFS.
+
+    :return: List of moves to solve the puzzle
+    """
+    # States are represented as tuples: (left_bank, right_bank, boat_position)
+    # Each bank is a frozenset of characters: 'W' (Wolf), 'G' (Goat), 'C' (Cabbage), 'F' (Farmer)
+    initial_state = (frozenset(['F', 'W', 'G', 'C']), frozenset(), 'left')
+    goal_state = (frozenset(), frozenset(['F', 'W', 'G', 'C']), 'right')
+
+    # Valid moves
+    def get_moves(state):
+        left, right, boat = state
+        moves = []
+        if boat == 'left':
+            source = left
+            target = right
+            next_boat = 'right'
+        else:
+            source = right
+            target = left
+            next_boat = 'left'
+
+        # Farmer can move alone or with one item
+        for item in source:
+            if item == 'F':
+                new_source = source - frozenset(['F'])
+                new_target = target | frozenset(['F'])
+                new_state = (new_source, new_target, next_boat) if boat == 'left' else (new_target, new_source, next_boat)
+                if is_valid(new_state):
+                    moves.append(new_state)
+            else:
+                new_source = source - frozenset(['F', item])
+                new_target = target | frozenset(['F', item])
+                new_state = (new_source, new_target, next_boat) if boat == 'left' else (new_target, new_source, next_boat)
+                if is_valid(new_state):
+                    moves.append(new_state)
+        return moves
+
+    # Check if state is valid (no goat alone with cabbage or wolf)
+    def is_valid(state):
+        left, right, _ = state
+        for bank in [left, right]:
+            if 'G' in bank and ('W' in bank or 'C' in bank) and 'F' not in bank:
+                return False
+        return True
+
+    # BFS to find the shortest path
+    queue = deque()
+    queue.append((initial_state, [initial_state]))
+    visited = set()
+    while queue:
+        current_state, path = queue.popleft()
+        if current_state == goal_state:
+            return path
+        visited.add(current_state)
+        for next_state in get_moves(current_state):
+            if next_state not in visited:
+                queue.append((next_state, path + [next_state]))
+
+    return None
+
+# Example usage:
+solution_path = river_crossing_puzzle()
+if solution_path:
+    print("Solution steps:")
+    for state in solution_path:
+        left, right, boat = state
+        print(f"Left bank: {left}, Right bank: {right}, Boat: {boat}")
+else:
+    print("No solution found.")
+```
+
+**Explanation:**
+
+- **Transformation:** Reduces the puzzle to a graph search problem.
+- **Efficiency:** BFS ensures the shortest path is found in \( O(V + E) \) time.
+
+---
+
+### **Strengths and Weaknesses of Transform and Conquer**
+
+**Strengths:**
+
+- **Improved Efficiency:** By transforming problems, we can apply more efficient algorithms or data structures.
+- **Versatility:** Applicable to a wide range of problems across different domains.
+- **Simplification:** Makes complex problems more tractable.
+
+**Weaknesses:**
+
+- **Overhead:** The transformation step may introduce additional computational overhead.
+- **Complexity:** Finding the right transformation may not be straightforward.
+- **Implementation Difficulty:** Some transformations may require sophisticated programming techniques.
+
+---
+
+Certainly! Below are the code implementations for the **Transform and Conquer** techniques, now with added comments to help explain each step. These examples illustrate how transforming a problem can lead to more efficient solutions.
+
+---
+
+### 1. **Horner’s Rule for Polynomial Evaluation**
+
+**Problem:** Evaluate a polynomial \( p(x) = a_n x^n + a_{n-1} x^{n-1} + \dots + a_1 x + a_0 \) efficiently for a given \( x \).
+
+**Solution:** Use Horner’s Rule to reduce the number of multiplications.
+
+```python
+def horner(coeffs, x):
+    """
+    Evaluate a polynomial at x using Horner's Rule.
+
+    :param coeffs: List of coefficients [a_n, a_{n-1}, ..., a_0]
+    :param x: The value at which to evaluate the polynomial
+    :return: The polynomial value at x
+    """
+    result = 0  # Initialize result to zero
+    for coefficient in coeffs:
+        # Multiply the current result by x and add the next coefficient
+        result = result * x + coefficient
+        # Debug: print(f"After processing coefficient {coefficient}, result = {result}")
+    return result
+
+# Example usage:
+coefficients = [2, -6, 2, -1]  # Represents 2x^3 - 6x^2 + 2x - 1
+x_value = 3
+value = horner(coefficients, x_value)
+print(f"The value of the polynomial at x = {x_value} is {value}")
+```
+
+**Explanation:**
+
+- **Transformation:** The polynomial is restructured to minimize operations.
+- **Efficiency:** Reduces the number of multiplications from \( O(n^2) \) to \( O(n) \).
+
+---
+
+### 2. **Binary Exponentiation**
+
+**Problem:** Compute \( a^n \) efficiently for large \( n \).
+
+**Solution:** Use binary exponentiation to reduce the number of multiplications.
+
+```python
+def binary_exponentiation(a, n):
+    """
+    Compute a^n using binary exponentiation.
+
+    :param a: The base
+    :param n: The exponent (non-negative integer)
+    :return: The value of a raised to the power n
+    """
+    result = 1      # Initialize result to 1 (a^0)
+    base = a        # Copy of base to use in calculations
+    exponent = n    # Copy of exponent to use in calculations
+    while exponent > 0:
+        # If the least significant bit is 1, multiply the result by base
+        if exponent % 2 == 1:
+            result *= base
+            # Debug: print(f"Multiplying result by base, result = {result}")
+        # Square the base for the next bit
+        base *= base
+        # Shift exponent to the right by 1 bit (integer division by 2)
+        exponent //= 2
+        # Debug: print(f"Base squared = {base}, Exponent shifted = {exponent}")
+    return result
+
+# Example usage:
+base = 2
+exponent = 10
+power = binary_exponentiation(base, exponent)
+print(f"{base} raised to the power {exponent} is {power}")
+```
+
+**Explanation:**
+
+- **Transformation:** The exponentiation process uses the binary representation of \( n \).
+- **Efficiency:** Reduces time complexity from \( O(n) \) to \( O(\log n) \).
+
+---
+
+### 3. **Least Common Multiple (LCM) Using Greatest Common Divisor (GCD)**
+
+**Problem:** Find the LCM of two integers \( m \) and \( n \).
+
+**Solution:** Use the relationship \( \text{LCM}(m, n) = \frac{m \times n}{\text{GCD}(m, n)} \).
+
+```python
+def gcd(a, b):
+    """
+    Compute the Greatest Common Divisor (GCD) of a and b using Euclid's algorithm.
+
+    :param a: First non-negative integer
+    :param b: Second non-negative integer
+    :return: The GCD of a and b
+    """
+    while b:
+        a, b = b, a % b  # Update a to b, and b to a mod b
+        # Debug: print(f"GCD step: a = {a}, b = {b}")
+    return a
+
+def lcm(m, n):
+    """
+    Compute the Least Common Multiple (LCM) of m and n.
+
+    :param m: First non-negative integer
+    :param n: Second non-negative integer
+    :return: The LCM of m and n
+    """
+    # Calculate GCD first
+    greatest_cd = gcd(m, n)
+    # Compute LCM using the relation between GCD and LCM
+    least_cm = (m * n) // greatest_cd
+    return least_cm
+
+# Example usage:
+m = 12
+n = 18
+result = lcm(m, n)
+print(f"The LCM of {m} and {n} is {result}")
+```
+
+**Explanation:**
+
+- **Transformation:** Reduces the LCM problem to computing the GCD.
+- **Efficiency:** GCD computation is efficient using Euclid's algorithm (\( O(\log \min(m, n)) \)).
+
+---
+
+### 4. **Heaps and Heapsort**
+
+**Problem:** Sort an array efficiently using a heap data structure.
+
+**Solution:** Use Heapsort, which involves building a max-heap and extracting the maximum element repeatedly.
+
+```python
+def heapify(arr, n, i):
+    """
+    Ensure the subtree rooted at index i satisfies the max-heap property.
+
+    :param arr: The array representing the heap
+    :param n: Size of the heap
+    :param i: Index of the root of the subtree
+    """
+    largest = i          # Initialize largest as root
+    left = 2 * i + 1     # Left child index
+    right = 2 * i + 2    # Right child index
+
+    # If left child exists and is greater than root
+    if left < n and arr[largest] < arr[left]:
+        largest = left
+
+    # If right child exists and is greater than largest so far
+    if right < n and arr[largest] < arr[right]:
+        largest = right
+
+    # If largest is not root, swap and continue heapifying
+    if largest != i:
+        arr[i], arr[largest] = arr[largest], arr[i]  # Swap root with largest
+        # Recursively heapify the affected subtree
+        heapify(arr, n, largest)
+        # Debug: print(f"Heapified subtree rooted at index {largest}")
+
+def heapsort(arr):
+    n = len(arr)
+
+    # Build a max-heap by heapifying from the bottom up
+    for i in range(n // 2 - 1, -1, -1):
+        heapify(arr, n, i)
+        # Debug: print(f"Heap after heapifying index {i}: {arr}")
+
+    # Extract elements one by one from the heap
+    for i in range(n - 1, 0, -1):
+        # Move current root (maximum) to the end
+        arr[i], arr[0] = arr[0], arr[i]
+        # Debug: print(f"Swapped max element with index {i}: {arr}")
+        # Heapify the reduced heap
+        heapify(arr, i, 0)
+
+# Example usage:
+arr = [12, 11, 13, 5, 6, 7]
+heapsort(arr)
+print("Sorted array is:", arr)
+```
+
+**Explanation:**
+
+- **Transformation:** Represents the array as a heap to facilitate efficient sorting.
+- **Efficiency:** Heapsort runs in \( O(n \log n) \) time, with good worst-case performance.
+
+---
+
+### 5. **Presorting to Simplify Problems**
+
+**Problem:** Find all pairs of elements in an array that sum to a specific value.
+
+**Solution:** Presort the array to simplify the problem.
+
+```python
+def find_pairs_with_sum(arr, target_sum):
+    """
+    Find all pairs of numbers in arr that sum up to target_sum.
+
+    :param arr: List of integers
+    :param target_sum: The target sum for the pairs
+    :return: List of tuples containing the pairs
+    """
+    arr.sort()  # Presort the array
+    left = 0               # Start pointer
+    right = len(arr) - 1   # End pointer
+    pairs = []             # List to store the pairs
+
+    while left < right:
+        current_sum = arr[left] + arr[right]
+        # Debug: print(f"Checking pair ({arr[left]}, {arr[right]}) with sum {current_sum}")
+        if current_sum == target_sum:
+            pairs.append((arr[left], arr[right]))
+            # Move both pointers after finding a valid pair
+            left += 1
+            right -= 1
+        elif current_sum < target_sum:
+            left += 1  # Need a larger sum, move left pointer to the right
+        else:
+            right -= 1  # Need a smaller sum, move right pointer to the left
+
+    return pairs
+
+# Example usage:
+arr = [1, 5, 7, -1, 5]
+target = 6
+result = find_pairs_with_sum(arr, target)
+print(f"Pairs with sum {target}:", result)
+```
+
+**Explanation:**
+
+- **Transformation:** Sorting the array reduces the complexity of finding pairs from \( O(n^2) \) to \( O(n \log n) \).
+- **Efficiency:** After sorting, we can use a two-pointer technique to find pairs in linear time.
+
+---
+
+### 6. **Polynomial Multiplication Using Fast Fourier Transform (FFT)**
+
+**Problem:** Multiply two polynomials efficiently.
+
+**Solution:** Use the Fast Fourier Transform to perform polynomial multiplication in \( O(n \log n) \) time.
+
+```python
+import numpy as np
+
+def polynomial_multiply(p1, p2):
+    """
+    Multiply two polynomials using FFT.
+
+    :param p1: Coefficients of the first polynomial
+    :param p2: Coefficients of the second polynomial
+    :return: Coefficients of the product polynomial
+    """
+    # Determine the size for FFT (next power of 2)
+    n = 1
+    while n < len(p1) + len(p2) - 1:
+        n *= 2
+
+    # Pad the polynomials with zeros to the determined size
+    p1_extended = np.array(p1 + [0] * (n - len(p1)), dtype=complex)
+    p2_extended = np.array(p2 + [0] * (n - len(p2)), dtype=complex)
+
+    # Compute the FFT of both polynomials
+    fft_p1 = np.fft.fft(p1_extended)
+    fft_p2 = np.fft.fft(p2_extended)
+
+    # Point-wise multiplication of the FFT results
+    fft_product = fft_p1 * fft_p2
+
+    # Compute the inverse FFT to get the coefficients of the product
+    product = np.fft.ifft(fft_product)
+
+    # Take the real part and round the coefficients
+    product = np.real(product)
+    product = [round(coef) for coef in product]
+
+    # Remove trailing zeros (if any)
+    while len(product) > 1 and product[-1] == 0:
+        product.pop()
+
+    return product
+
+# Example usage:
+poly1 = [1, 2, 3]  # Represents 1 + 2x + 3x^2
+poly2 = [4, 5, 6]  # Represents 4 + 5x + 6x^2
+product = polynomial_multiply(poly1, poly2)
+print("Product polynomial coefficients:", product)
+```
+
+**Explanation:**
+
+- **Transformation:** Transforms polynomials to the frequency domain using FFT.
+- **Efficiency:** Reduces multiplication from \( O(n^2) \) to \( O(n \log n) \).
+
+---
+
+### 7. **Gaussian Elimination**
+
+**Problem:** Solve a system of linear equations.
+
+**Solution:** Use Gaussian elimination to simplify the system to an upper triangular form and then perform back-substitution.
+
+```python
+import numpy as np
+
+def gaussian_elimination(a, b):
+    """
+    Solve the linear system Ax = b using Gaussian elimination.
+
+    :param a: Coefficient matrix A (list of lists)
+    :param b: Right-hand side vector b (list)
+    :return: Solution vector x (list)
+    """
+    n = len(b)
+    # Forward elimination to create an upper triangular matrix
+    for k in range(n):
+        # Find the pivot row
+        max_row = max(range(k, n), key=lambda i: abs(a[i][k]))
+        if a[max_row][k] == 0:
+            raise ValueError("Matrix is singular.")
+        # Swap the current row with the pivot row
+        if max_row != k:
+            a[k], a[max_row] = a[max_row], a[k]
+            b[k], b[max_row] = b[max_row], b[k]
+            # Debug: print(f"Swapped rows {k} and {max_row}")
+        # Eliminate entries below the pivot
+        for i in range(k + 1, n):
+            factor = a[i][k] / a[k][k]
+            # Subtract factor * pivot row from current row
+            for j in range(k, n):
+                a[i][j] -= factor * a[k][j]
+            b[i] -= factor * b[k]
+            # Debug: print(f"Row {i} after elimination: {a[i]}, b[{i}] = {b[i]}")
+    # Back substitution to solve for variables
+    x = [0] * n
+    for i in reversed(range(n)):
+        sum_ax = sum(a[i][j] * x[j] for j in range(i + 1, n))
+        x[i] = (b[i] - sum_ax) / a[i][i]
+        # Debug: print(f"Solved x[{i}] = {x[i]}")
+    return x
+
+# Example usage:
+A = [
+    [2, 1, -1],
+    [-3, -1, 2],
+    [-2, 1, 2]
+]
+b = [8, -11, -3]
+solution = gaussian_elimination(A, b)
+print("Solution:", solution)
+```
+
+**Explanation:**
+
+- **Transformation:** Transforms the system into an upper triangular matrix.
+- **Efficiency:** Solves the system in \( O(n^3) \) time.
+
+---
+
+### 8. **Problem Reduction Example: Solving the River Crossing Puzzle**
+
+**Problem:** Determine the sequence of moves to get all characters across a river without violating any constraints.
+
+**Solution:** Model the puzzle as a state-space graph and perform BFS to find the shortest path.
+
+```python
+from collections import deque
+
+def river_crossing_puzzle():
+    """
+    Solve the classic river crossing puzzle using BFS.
+
+    :return: List of moves to solve the puzzle
+    """
+    # States are represented as tuples: (left_bank, right_bank, boat_position)
+    # Each bank is a frozenset of characters: 'W' (Wolf), 'G' (Goat), 'C' (Cabbage), 'F' (Farmer)
+    initial_state = (frozenset(['F', 'W', 'G', 'C']), frozenset(), 'left')
+    goal_state = (frozenset(), frozenset(['F', 'W', 'G', 'C']), 'right')
+
+    # Valid moves generator
+    def get_moves(state):
+        left, right, boat = state
+        moves = []
+        # Determine the source and target banks based on boat position
+        if boat == 'left':
+            source = left
+            target = right
+            next_boat = 'right'
+        else:
+            source = right
+            target = left
+            next_boat = 'left'
+
+        # Farmer can move alone or with one item
+        for item in source:
+            if item == 'F':
+                # Farmer moves alone
+                new_source = source - frozenset(['F'])
+                new_target = target | frozenset(['F'])
+            else:
+                # Farmer moves with item
+                new_source = source - frozenset(['F', item])
+                new_target = target | frozenset(['F', item])
+            # Create new state
+            new_state = (new_source, new_target, next_boat) if boat == 'left' else (new_target, new_source, next_boat)
+            if is_valid(new_state):
+                moves.append(new_state)
+                # Debug: print(f"Valid move: {new_state}")
+        return moves
+
+    # Check if a state is valid (no goat alone with cabbage or wolf)
+    def is_valid(state):
+        left, right, _ = state
+        for bank in [left, right]:
+            if 'G' in bank and ('W' in bank or 'C' in bank) and 'F' not in bank:
+                return False
+        return True
+
+    # BFS to find the shortest path
+    queue = deque()
+    queue.append((initial_state, [initial_state]))  # Each element is (state, path)
+    visited = set()
+    while queue:
+        current_state, path = queue.popleft()
+        if current_state == goal_state:
+            return path  # Found a solution
+        visited.add(current_state)
+        for next_state in get_moves(current_state):
+            if next_state not in visited:
+                queue.append((next_state, path + [next_state]))
+                # Debug: print(f"Enqueued state: {next_state}")
+
+    return None  # No solution found
+
+# Example usage:
+solution_path = river_crossing_puzzle()
+if solution_path:
+    print("Solution steps:")
+    step_number = 1
+    for state in solution_path:
+        left, right, boat = state
+        print(f"Step {step_number}: Left bank: {left}, Right bank: {right}, Boat position: {boat}")
+        step_number += 1
+else:
+    print("No solution found.")
+```
+
+**Explanation:**
+
+- **Transformation:** Reduces the puzzle to a graph search problem.
+- **Efficiency:** BFS ensures the shortest path is found in \( O(V + E) \) time.
+
+---
 
