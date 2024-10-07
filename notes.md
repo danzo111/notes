@@ -1,4 +1,4 @@
-Here are detailed notes on the "decrease and conquer" strategies based on the content from the PDFs you uploaded:
+
 
 ### Decrease and Conquer Overview:
 - **Decrease and Conquer** is a problem-solving strategy that involves reducing the problem's size with each step. The solution to a smaller instance is extended to solve the larger problem.
@@ -54,4 +54,337 @@ Here are detailed notes on the "decrease and conquer" strategies based on the co
 
 ---
 
-These notes capture the essential concepts and key examples of "decrease and conquer" strategies from your PDFs. If you need more details on specific parts, feel free to ask!
+Here are the remaining notes on "decrease and conquer" strategies based on your PDFs:
+
+### Additional Decrease by a Constant Factor Examples:
+
+6. **Multiplication à la Russe**:
+   - Also known as Russian Peasant Multiplication, this is a method of multiplying two numbers by halving one number and doubling the other.
+   - For instance, to multiply 50 by 20:
+     - \( 50 \times 20 = 25 \times 40 = 12 \times 80 + 40 = 6 \times 160 + 40 = 3 \times 320 + 40 = 1 \times 640 + 320 + 40 = 1000 \).
+   - This method decreases one number by a factor of 2 at each step and is efficient in hardware (shift operations instead of multiplication).
+   - The time complexity is \( \Theta(\log n) \) due to the halving process.
+   - [Source for Multiplication à la Russe Example, Lecture 6+7c, page 24](6)
+
+7. **Interpolation Search** (for sorted arrays):
+   - This search method improves on binary search by guessing where the desired value might be based on its position in a sorted array.
+   - It assumes that the array values increase linearly between the leftmost and rightmost elements.
+   - The idea is to calculate the approximate position of the search element, which often makes fewer comparisons than binary search.
+   - The worst-case time complexity is \( O(n) \), but the average case is better.
+   - [Source for Interpolation Search Example, Lecture 6+7c, page 32](6)
+
+---
+
+### Decrease by a Variable Size Examples:
+
+8. **Finding the k-th Order Statistic (Quickselect Algorithm)**:
+   - The problem is to find the k-th smallest element in an unordered list. This can be done using a partitioning scheme similar to QuickSort.
+   - By repeatedly partitioning the list around a pivot, the algorithm gradually narrows down to the k-th smallest element.
+   - **Quickselect** has an average time complexity of \( \Theta(n) \), but in the worst case, it is \( \Theta(n^2) \).
+   - [Source for Quickselect Example, Lecture 6+7c, pages 27-31](6)
+
+9. **Efficient Matrix Multiplication (Strassen’s Method)**:
+   - The brute-force multiplication of two \( n \times n \) matrices takes \( \Theta(n^3) \) operations.
+   - **Strassen’s Algorithm** reduces this to approximately \( \Theta(n^{2.81}) \) by recursively breaking the matrices into smaller submatrices and reducing the number of multiplication operations.
+   - This is achieved by trading off multiplication for addition, which is cheaper in terms of computational cost.
+   - [Source for Strassen’s Matrix Multiplication Example, Lecture 6+7c, page 45](6)
+
+---
+
+### General Efficiency and Applications of Decrease and Conquer:
+
+- **Strengths**:
+  - Decrease and conquer strategies can be implemented **recursively** (top-down) or **iteratively** (bottom-up).
+  - Efficient for certain problems, leading to logarithmic or linear time complexities in many cases (e.g., \( \Theta(\log n) \)).
+  - Useful for tasks like **graph traversal** (both Breadth-First and Depth-First Search rely on this technique).
+  
+- **Weaknesses**:
+  - Less widely applicable, especially for the **constant factor** reduction method.
+  - Some cases, like **variable size decrease** problems, can still result in inefficient algorithms (e.g., \( \Theta(n^2) \) in the worst case for Quickselect).
+
+---
+
+
+
+---
+
+### 1. **Insertion Sort (Decrease by a Constant)**
+
+```python
+def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        # Move elements greater than key to one position ahead
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+
+# Example usage:
+arr = [12, 11, 13, 5, 6]
+insertion_sort(arr)
+print("Sorted array:", arr)
+```
+
+**Explanation:** The algorithm builds the sorted array one element at a time by inserting each new element into its proper place among the previously sorted elements.
+
+---
+
+### 2. **Topological Sort (Decrease by a Constant)**
+
+```python
+from collections import defaultdict
+
+def topological_sort_util(v, visited, stack, graph):
+    visited[v] = True
+    for i in graph[v]:
+        if not visited[i]:
+            topological_sort_util(i, visited, stack, graph)
+    stack.insert(0, v)  # Equivalent to push operation
+
+def topological_sort(graph, vertices):
+    visited = {v: False for v in vertices}
+    stack = []
+    for v in vertices:
+        if not visited[v]:
+            topological_sort_util(v, visited, stack, graph)
+    return stack
+
+# Example usage:
+graph = defaultdict(list)
+# Adding edges to the graph
+graph['5'].extend(['0', '2'])
+graph['4'].extend(['0', '1'])
+graph['2'].append('3')
+graph['3'].append('1')
+
+vertices = ['0', '1', '2', '3', '4', '5']
+order = topological_sort(graph, vertices)
+print("Topological Sort Order:", order)
+```
+
+**Explanation:** This uses DFS to perform a topological sort on a DAG, ordering tasks based on dependencies.
+
+---
+
+### 3. **Fake Coin Problem (Decrease by a Constant Factor)**
+
+```python
+def find_fake_coin(coins, offset=0):
+    n = len(coins)
+    if n == 1:
+        return offset
+    elif n == 2:
+        return offset if coins[0] < coins[1] else offset + 1
+    else:
+        mid = n // 2
+        left = coins[:mid]
+        right = coins[mid:mid*2]
+        left_weight = sum(left)
+        right_weight = sum(right)
+        if left_weight < right_weight:
+            return find_fake_coin(left, offset)
+        elif left_weight > right_weight:
+            return find_fake_coin(right, offset + mid)
+        else:
+            if n > mid*2:
+                return offset + mid*2  # The extra coin is fake
+            else:
+                return -1  # No fake coin found
+
+# Example usage:
+coins = [10, 10, 10, 10, 10, 10, 9]  # The last coin is fake (lighter)
+index = find_fake_coin(coins)
+print(f"The fake coin is at index {index}")
+```
+
+**Explanation:** This function recursively divides the coins into halves to find the lighter fake coin efficiently.
+
+---
+
+### 4. **Generating Permutations (Decrease by 1)**
+
+```python
+def permutations(lst):
+    if len(lst) == 0:
+        return []
+    elif len(lst) == 1:
+        return [lst]
+    else:
+        perms = []
+        for i in range(len(lst)):
+            m = lst[i]
+            rem_lst = lst[:i] + lst[i+1:]
+            for p in permutations(rem_lst):
+                perms.append([m] + p)
+        return perms
+
+# Example usage:
+lst = [1, 2, 3]
+perm_list = permutations(lst)
+print("Permutations:")
+for perm in perm_list:
+    print(perm)
+```
+
+**Explanation:** The function recursively generates permutations by fixing each element and permuting the remaining list.
+
+---
+
+### 5. **Greatest Common Divisor (Variable Size Decrease)**
+
+```python
+def gcd(a, b):
+    if b == 0:
+        return a
+    else:
+        return gcd(b, a % b)
+
+# Example usage:
+result = gcd(60, 24)
+print("GCD is:", result)
+```
+
+**Explanation:** This is the classic Euclidean algorithm, which reduces the problem size by the remainder.
+
+---
+
+### 6. **Multiplication à la Russe**
+
+```python
+def russian_peasant(a, b):
+    result = 0
+    while b > 0:
+        if b % 2 != 0:
+            result += a
+        a <<= 1  # Double the number
+        b >>= 1  # Halve the number
+    return result
+
+# Example usage:
+product = russian_peasant(50, 20)
+print("Product is:", product)
+```
+
+**Explanation:** This method multiplies two numbers by halving and doubling, adding the current value when the halved number is odd.
+
+---
+
+### 7. **Interpolation Search**
+
+```python
+def interpolation_search(arr, x):
+    low = 0
+    high = len(arr) - 1
+    while low <= high and arr[low] != arr[high]:
+        # Estimate the position
+        pos = low + ((x - arr[low]) * (high - low)) // (arr[high] - arr[low])
+        if pos < 0 or pos >= len(arr):
+            return -1
+        if arr[pos] == x:
+            return pos
+        elif arr[pos] < x:
+            low = pos + 1
+        else:
+            high = pos - 1
+    if arr[low] == x:
+        return low
+    return -1
+
+# Example usage:
+arr = [10, 12, 13, 16, 18, 19, 20, 21, 22, 23, 24, 33, 35, 42, 47]
+x = 18
+index = interpolation_search(arr, x)
+print(f"Element found at index {index}")
+```
+
+**Explanation:** Interpolation search improves upon binary search by estimating the position of the target value.
+
+---
+
+### 8. **Quickselect Algorithm (Finding the k-th Order Statistic)**
+
+```python
+def quickselect(arr, k):
+    if len(arr) == 1:
+        return arr[0]
+    pivot = arr[len(arr) // 2]
+    lows = [el for el in arr if el < pivot]
+    highs = [el for el in arr if el > pivot]
+    pivots = [el for el in arr if el == pivot]
+    if k < len(lows):
+        return quickselect(lows, k)
+    elif k < len(lows) + len(pivots):
+        return pivots[0]
+    else:
+        return quickselect(highs, k - len(lows) - len(pivots))
+
+# Example usage:
+arr = [12, 3, 5, 7, 4, 19, 26]
+k = 3  # Looking for the 4th smallest element (0-indexed)
+result = quickselect(arr, k)
+print(f"The {k+1}-th smallest element is {result}")
+```
+
+**Explanation:** Quickselect partitions the array around a pivot to find the k-th smallest element efficiently.
+
+---
+
+### 9. **Strassen’s Matrix Multiplication**
+
+```python
+import numpy as np
+
+def strassen(A, B):
+    assert A.shape == B.shape
+    n = A.shape[0]
+    if n == 1:
+        return A * B
+    else:
+        # Divide matrices into quadrants
+        mid = n // 2
+        A11 = A[:mid, :mid]
+        A12 = A[:mid, mid:]
+        A21 = A[mid:, :mid]
+        A22 = A[mid:, mid:]
+
+        B11 = B[:mid, :mid]
+        B12 = B[:mid, mid:]
+        B21 = B[mid:, :mid]
+        B22 = B[mid:, mid:]
+
+        # Compute the 7 products
+        M1 = strassen(A11 + A22, B11 + B22)
+        M2 = strassen(A21 + A22, B11)
+        M3 = strassen(A11, B12 - B22)
+        M4 = strassen(A22, B21 - B11)
+        M5 = strassen(A11 + A12, B22)
+        M6 = strassen(A21 - A11, B11 + B12)
+        M7 = strassen(A12 - A22, B21 + B22)
+
+        # Compute the result quadrants
+        C11 = M1 + M4 - M5 + M7
+        C12 = M3 + M5
+        C21 = M2 + M4
+        C22 = M1 - M2 + M3 + M6
+
+        # Combine quadrants into a full matrix
+        C = np.zeros((n, n), dtype=A.dtype)
+        C[:mid, :mid] = C11
+        C[:mid, mid:] = C12
+        C[mid:, :mid] = C21
+        C[mid:, mid:] = C22
+        return C
+
+# Example usage:
+A = np.array([[1, 3], [7, 5]])
+B = np.array([[6, 8], [4, 2]])
+C = strassen(A, B)
+print("Product matrix:\n", C)
+```
+
+**Explanation:** Strassen’s algorithm multiplies matrices faster than the standard method by reducing the number of recursive multiplications.
+
+---
+
